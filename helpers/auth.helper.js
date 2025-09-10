@@ -1,8 +1,8 @@
 import { createSecretKey } from 'crypto';
 import { SignJWT, jwtVerify } from 'jose';
-import dontenv from 'dotenv';
+import dotenv from 'dotenv';
 
-dontenv.config();
+dotenv.config();
 
 const alg = 'HS256';
 const jwtIIS = process.env.JWT_IIS;

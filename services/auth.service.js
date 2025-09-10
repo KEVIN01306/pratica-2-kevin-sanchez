@@ -1,10 +1,8 @@
-import { getDb } from '../configs/mongodb.config.js';
 import { issueAccessToken } from '../helpers/auth.helper.js'
+import { UsuarioModel } from '../models/Usuario.js';
 
 const login = async (data) => {
-  const db = getDb();
-  console.log(data)
-  const usuarioValido = await db.collection('usuarios').findOne({email: data.email, password: data.password});
+  const usuarioValido = await UsuarioModel.findOne({ email: data.email, password: data.password }).lean();
 
   if (!usuarioValido){
     const error = new Error('AUTH_ERROR');
@@ -23,5 +21,3 @@ const login = async (data) => {
 export { 
   login,
 };
-
-

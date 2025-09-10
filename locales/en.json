@@ -1,0 +1,16 @@
+{
+  "auth": {
+    "invalid_credentials": "Invalid credentials.",
+    "token_invalid": "Invalid or expired token",
+    "bearer_missing": "Bearer token not provided"
+  },
+  "clientes": {
+    "fetched": "Clients fetched successfully",
+    "created": "Client created"
+  },
+  "errors": {
+    "internal": "Internal server error",
+    "data_not_found": "Data not found",
+    "data_exists": "Resource already exists"
+  }
+} 

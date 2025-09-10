@@ -1,0 +1,17 @@
+{
+    "auth": {
+      "invalid_credentials": "Credenciales incorrectas.",
+      "token_invalid": "Token invalido o expirado",
+      "bearer_missing": "Bearer token no enviado"
+    },
+    "clientes": {
+      "fetched": "Clientes obtenidos exitosamente",
+      "created": "Cliente guardado"
+    },
+    "errors": {
+      "internal": "Error interno del servidor",
+      "data_not_found": "Datos no encontrados",
+      "data_exists": "El recurso ya existe"
+    }
+  }
+  

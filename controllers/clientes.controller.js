@@ -16,16 +16,16 @@ const schemaCliente = joi.object({
 //Handler para el metodo get de todos los clientes
 const getClientesHandler = async (req, res) => {
   try{
-    const clientes = getClientes();
+    const clientes = await getClientes();
 
-    res.status(200).json(responseSuccess("Clientes obtenidos exitosamente",clientes));
+    res.status(200).json(responseSuccess(req.__("clientes.fetched"),clientes));
   } catch (error) {
     let errorCode = 500;
-    let errorMessage = 'INTERNAL_SERVER_ERROR';
+    let errorMessage = req.__("errors.internal");
     switch(error.code){
       case 'DATA_NOT_FOUND':
         errorCode = 404;
-        errorMessage = error.code;
+        errorMessage = req.__("errors.data_not_found");
         break;
     }
 
@@ -38,23 +38,23 @@ const getClientesHandler = async (req, res) => {
 const postClienteHandler = async (req, res) => {
   try{
     const data = req.body;
-    const { error, valueData } = schemaCliente.validate(data, { abortEarly: false });
+    const { error, value: valueData } = schemaCliente.validate(data, { abortEarly: false });
 
     if(error){
       return res.status(400).json(responseError(error.details.map(e => e.message)));
     }
 
-    const clienteId = postCliente(valueData);
+    const clienteId = await postCliente(valueData);
     
-    res.status(201).json(responseSuccess("cliente guardado", clienteId));
+    res.status(201).json(responseSuccess(req.__("clientes.created"), clienteId));
 
   } catch (error) {
     let errorCode = 500;
-    let errorMessage = 'INTERNAL_SERVER_ERROR';
+    let errorMessage = req.__("errors.internal");
     switch(error.code){
       case 'DATA_EXISTS':
         errorCode = 409;
-        errorMessage = error.code;
+        errorMessage = req.__("errors.data_exists");
         break;
     }
 

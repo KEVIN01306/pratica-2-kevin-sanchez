@@ -12,23 +12,26 @@ const loginHandler = async (req, res) => {
   try{
     const data = req.body;
     
-    const { error, values } = schemaAuth.validate(data, { abortEarly: false });
+    const { error, value } = schemaAuth.validate(data, { abortEarly: false });
 
     if(error){
-      return res.status(400).json("Credenciales incorrectas.");
+      return res.status(400).json(responseError(req.__("auth.invalid_credentials")));
     }
 
-    const token = await login(data);
-    console.log('token',token)
+    const token = await login(value);
     
     res.status(200).json(responseSuccess("success", token));
   } catch (error) {
     let errorCode = 500;
-    let errorMessage = 'INTERNAL_SERVER_ERROR';
+    let errorMessage = req.__("errors.internal");
     switch(error.code){
       case 'DATA_NOT_FOUND':
         errorCode = 404;
-        errorMessage = error.code;
+        errorMessage = req.__("errors.data_not_found");
+        break;
+      case 'AUTH_ERROR':
+        errorCode = 401;
+        errorMessage = req.__("auth.invalid_credentials");
         break;
     }
 
@@ -42,14 +45,14 @@ const verifyTokenHandler = () => {
   return async (req, res, next) => {
       try {
         const auth = req.header('Authorization');
-        const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
-        if (!token) return res.status(401).json({ error: 'Bearer token no enviado' });
+        const token = auth && auth.startsWith('Bearer ') ? auth.slice(7) : null;
+        if (!token) return res.status(401).json(responseError(req.__("auth.bearer_missing")));
   
         await verifyAccessToken(token);
         
         next();
       } catch (err) {
-        return res.status(401).json(responseError('Token invalido o expirado'));
+        return res.status(401).json(responseError(req.__("auth.token_invalid")));
       }
     };
 }

@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -7,33 +7,27 @@ const mongoHost = process.env.MONGO_HOST;
 const mongoPort = process.env.MONGO_PORT;
 const mongoDb = process.env.MONGO_DB;
 const mongoUser = process.env.MONGO_DB_USER;
-const mongoPassword = process.env.MONGO_DB_PASSWORD;  
+const mongoPassword = process.env.MONGO_DB_PASSWORD;
 
 const mongoUrl = `mongodb://${mongoUser}:${mongoPassword}@${mongoHost}:${mongoPort}/${mongoDb}?authSource=admin`;
 
-let client;
-let db;
+let isConnected = false;
 
 export const connectToMongo = async () => {
-  if (db) {
-    return db;
-  }
+  if (isConnected) return;
 
   try {
-    client = new MongoClient(mongoUrl);
-    await client.connect();
-    db = client.db(mongoDb);
-    console.log("Conectado a la base de datos MongoDB");
+    await mongoose.connect(mongoUrl, {
+      serverSelectionTimeoutMS: 10000
+    });
+    isConnected = true;
+    console.log('Conectado a la base de datos MongoDB (Mongoose)');
   } catch (error) {
-    console.error("Error al conectar a MongoDB:", error);
+    console.error('Error al conectar a MongoDB (Mongoose):', error);
+    throw error;
   }
-}
+};
 
 export const getDb = () => {
-  if (!db) {
-    connectToMongo();
-    throw new Error("No hay conexión a la base de datos. Asegúrate de llamar a connectToMongo primero.");
-  }
-  return db;
-}
-
+  return mongoose.connection;
+};

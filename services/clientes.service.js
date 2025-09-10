@@ -1,12 +1,11 @@
-import { getDb } from '../configs/mongodb.config.js';
+import { ClienteModel } from '../models/Cliente.js';
 
 const getClientes = async () => {
-  const db = getDb();
-  const clientes = await db.collection('clientes').find().toArray();
+  const clientes = await ClienteModel.find().lean();
   
-  if (!clientes){
+  if (!clientes || clientes.length === 0){
     const error = new Error('DATA_NOT_FOUND');
-    error.code('DATA_NOT_FOUND');
+    error.code = 'DATA_NOT_FOUND';
     throw error;
   }
 
@@ -14,24 +13,20 @@ const getClientes = async () => {
 }
 
 const postCliente = async (data) => {
-  const db = getDb();
-
-  const cliente = await db.collection('clientes').findOne({nit: data.nit});
+  const cliente = await ClienteModel.findOne({ nit: data.nit }).lean();
 
   if (cliente){
-    const error = new Error('AUTH_ERROR');
-    error.code = 'AUTH_ERROR';
+    const error = new Error('DATA_EXISTS');
+    error.code = 'DATA_EXISTS';
     throw error;
   }
   
-  const nuevoCliente = await db.collection('clientes').insertOne(data);
+  const nuevoCliente = await ClienteModel.create(data);
   
-  return nuevoCliente.insertedId;
+  return nuevoCliente._id;
 }
 
 export { 
   getClientes,
   postCliente
 };
-
-
